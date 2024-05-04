@@ -17,6 +17,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
 # lint
+RUN pip3 install --upgrade setuptools
 RUN pip install --upgrade pip
 RUN pip install flake8==6.0.0
 COPY . /usr/src/app/
