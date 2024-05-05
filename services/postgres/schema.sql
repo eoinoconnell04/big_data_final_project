@@ -1,0 +1,28 @@
+CREATE EXTENSION postgis;
+
+\set ON_ERROR_STOP on
+
+BEGIN;
+
+CREATE TABLE users (
+	id_users BIGSERIAL PRIMARY KEY,
+	username TEXT UNIQUE NOT NULL,
+	password TEXT NOT NULL,
+	bio TEXT
+);
+
+CREATE TABLE tweets (
+	id_tweets BIGSERIAL PRIMARY KEY,
+	id_users BIGINT NOT NULL REFERENCES users(id_users),
+	id_urls BIGINT UNIQUE NOT NULL REFERENCES urls(id_urls),
+	text TEXT,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE urls (
+	id_urls BIGSERIAL PRIMARY KEY,
+	-- id_tweets BIGINT UNIQUE REFERENCES tweets(id_tweets),
+	url TEXT UNIQUE NOT NULL
+);
+
+COMMIT;

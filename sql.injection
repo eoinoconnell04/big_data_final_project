@@ -1,0 +1,11 @@
+
+username = ''
+password = ''
+
+sql = """
+INSERT INTO users (usernmae, password) VALUES (?, ?);
+"""
+connection.execute(sql, [username, password])
+connection.commit ()
+
+# USE THIS SYNTAX FOR ALL INSERTS
