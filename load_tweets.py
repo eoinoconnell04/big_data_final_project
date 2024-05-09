@@ -33,7 +33,7 @@ def insert_user(connection, username, password):
     try:      
         # id_users is autoincremented
         sql = """
-        INSERT INTO users (usernmae, password) VALUES (?, ?);
+        INSERT INTO users (username, password) VALUES (?, ?);
         """
         connection.execute(sql, [username, password])
     except sqlalchemy.exc.IntegrityError:
@@ -83,8 +83,6 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--db',required=True)
-    parser.add_argument('--inputs',nargs='+',required=True)
-    parser.add_argument('--print_every',type=int,default=1000)
     args = parser.parse_args()
 
     # create database connection
@@ -96,7 +94,7 @@ if __name__ == '__main__':
     # inserts random users
     for i in range(5):
 
-        # load and insert the tweet
+        # load and insert the user 
         username = gen_user()
         password = gen_pass()
         insert_user(connection,username,password)
@@ -109,7 +107,7 @@ if __name__ == '__main__':
     # inserts random urls
     for i in range(5):
 
-        # load and insert the tweet
+        # load and insert the url 
         url = gen_url()
         insert_url(connection,url)
 
