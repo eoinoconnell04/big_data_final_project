@@ -11,7 +11,7 @@ import random
 import string
 from datetime import datetime
 
-def insert_tweet(connection,tweet,user):
+def insert_tweet(connection,tweet,user, url):
     '''
     Insert the tweet into the database.
 
@@ -20,31 +20,78 @@ def insert_tweet(connection,tweet,user):
         tweet: a dictionary representing the json tweet object
 
     '''
-    time = datetime.now()
+    # time = datetime.now()
     try:
+        sql = sqlalchemy.sql.text(
+            '''
+            INSERT INTO tweets (text, id_users, id_urls) 
+            VALUES (:text, :id_users, :id_urls)
+            ''')
+
+        sql = sql.bindparams(text=tweet,
+                             id_users=user,
+                             id_urls=url)
+        connection.execute(sql)
+
+        
+        '''
         sql = """
         INSERT INTO tweets (tweet, user, time) VALUES (?, ?, ?);
         """
         connection.execute(sql, [tweet, user, time])
+        '''
+
+
     except sqlalchemy.exc.IntegrityError:
         print('load tweet error')            
 
 def insert_user(connection, username, password):
     try:      
         # id_users is autoincremented
+        
+        sql = sqlalchemy.sql.text(
+            '''
+            INSERT INTO users (username, password) 
+            VALUES (:username, :password)
+            ''')
+
+        sql = sql.bindparams(username=username,
+                             password=password)
+        connection.execute(sql)
+        
+
+        ''' COMMENTED OUT TO SAVE 
         sql = """
         INSERT INTO users (username, password) VALUES (?, ?);
         """
         connection.execute(sql, [username, password])
+        '''
+
+        
     except sqlalchemy.exc.IntegrityError:
         print('load user error')        
 
 def insert_url(connection, url):
     try:
+        
+        sql = sqlalchemy.sql.text(
+            '''
+            INSERT INTO urls (url) 
+            VALUES (:url)
+            ''')
+
+        sql = sql.bindparams(url=url)
+        connection.execute(sql)
+
+
+        '''
         sql = """
         INSERT INTO urls (url) VALUES (?);
         """
         connection.execute(sql, [url])
+        '''
+
+
     except sqlalchemy.exc.IntegrityError:
         print('load url error')
 
@@ -73,6 +120,15 @@ def gen_tweet():
             word += random.choice(string.ascii_letters)
         tweet = tweet + word + ' '
     return tweet 
+
+def gen_url():
+    num_digits = random.randint(18, 23)
+    url = ''
+    for i in range(num_digits):
+            url += random.choice(string.ascii_letters)
+    return url 
+
+
 
 
 # Main function
