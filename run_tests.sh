@@ -9,6 +9,10 @@ for problem in sql/*; do
     problem_id=$(basename ${problem%.sql})
     result="results/$problem_id.out"
     expected="expected/$problem_id.out"
+    
+    cat $expected
+    cat $result
+    
     psql < $problem > $result
     DIFF=$(diff -B $expected $result)
     if [ -z "$DIFF" ]; then
