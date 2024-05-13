@@ -1,3 +1,4 @@
+
 import os
 
 from flask import (
@@ -65,21 +66,29 @@ def logout():
 
     return response 
 
-@app.route('/create_account')
+@app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
 
     username = request.form.get('username')
     password = request.form.get('password')
     password2 = request.form.get('password2')
+
+
     if username is not None and password is not None and password2 is not None:
         if (password != password2):
-            return render_template('create_account.html', mismatch=True, taken=False, empty=False)
+            return render_template('create_account.html', logged_in=False, mismatch=True, taken=False, empty=False)
         elif check_taken(username):
-            return render_template('create_account.html', mismatch=False, taken=True, empty=False)
+            return render_template('create_account.html', logged_in=False, mismatch=False, taken=True, empty=False)
         else:
-            return render_template('create_account.html', mismatch=False, taken=False, empty=False)
+            try:
+                result = connection.execute(text(
+                    "INSERT INTO users (username, password) VALUES (:username, :password);"
+                    ),  {"username": username, "password": password})  
+            except sqlalchemy.exc.IntegrityError:
+                print('error')
+            return render_template('create_account.html', logged_in=False, mismatch=False, taken=False, empty=False)
     else:
-        return render_template('create_account.html', mismatch=False, taken=False, empty=True)
+        return render_template('create_account.html', logged_in=False, mismatch=False, taken=False, empty=True)
 
 @app.route('/create_message', methods=['GET', 'POST'])
 def create_message():
@@ -89,14 +98,15 @@ def create_message():
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_creds = check_creds(username,password)
-
+    if not message:
+            return render_template('create_message.html',logged_in=good_creds, message_inserted=False)
     if good_creds and message is not None:
         insert_tweet(message, username)
         return render_template('create_message.html',logged_in=good_creds, message_inserted=True)
 
     return render_template('create_message.html',logged_in=good_creds, message_inserted=False)
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
 
     username = request.cookies.get('username')
@@ -105,7 +115,11 @@ def search():
 
     search = request.form.get('search')
 
-    return render_template('search.html',logged_in=good_creds)
+    page = 1
+
+    tweets = get_tweets(search, page)
+    
+    return render_template('search.html',logged_in=good_creds, result=result, tweets=tweets, page=page, search=search)
 
 
 
@@ -153,7 +167,9 @@ def insert_tweet(text, username):
         ''')
 
     result_id_users = connection.execute(sql, {'username': username})
-    id_users = result_id_users.fetchone()[0]  # Fetch the result and extract the value
+    for row in result_id_users.fetchall():
+        id_users = row[0]
+
 
     sql = sqlalchemy.sql.text('''
         SELECT MIN(u.id_urls)               
@@ -163,7 +179,8 @@ def insert_tweet(text, username):
         ''')
 
     result_id_urls = connection.execute(sql)
-    id_urls = result_id_urls.fetchone()[0]  # Fetch the result and extract the value
+    for row in result_id_urls.fetchall():
+        id_urls = row[0]
 
     sql = sqlalchemy.sql.text(
             '''
@@ -175,5 +192,36 @@ def insert_tweet(text, username):
         id_users=id_users,
         id_urls=id_urls)
     connection.execute(sql)
+    connection.commit()
 
+def get_tweets(search, page):
+    offset = (page - 1) * 20
+    tweets = []
+    sql = sqlalchemy.sql.text("""
+    SELECT id_tweets,
+    ts_headline('english', text, plainto_tsquery(:search), 'StartSel=<span> StopSel=</span>') AS highlighted_text,
+    created_at,
+    id_users
+    FROM tweets
+    WHERE to_tsvector('english', text) @@ plainto_tsquery(:search)
+    ORDER BY created_at DESC
+    LIMIT 20 OFFSET :offset;
+    """)
+
+    res = connection.execute(sql, {'search': ' & '.join(search.split()), 'offset': offset})
+    for row in res.fetchall():
+        user_sql = sqlalchemy.sql.text("""
+            SELECT username
+            FROM users
+            WHERE id_users = :id_users;
+        """)
+        user_res = connection.execute(user_sql, {'id_users': row[3]})
+        user_row = user_res.fetchone()
+        tweets.append({
+            'username': user_row[0],
+            'text': bleach.clean(row[1], tags=['p', 'br', 'a', 'b', 'span'], attributes={'a': ['href']}).replace("<span>", "<span class=highlight>"),
+            'created_at': row[2]
+        })
+
+    return tweets
 

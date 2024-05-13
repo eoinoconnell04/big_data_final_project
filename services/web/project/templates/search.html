@@ -13,4 +13,56 @@
                 </tr>
         </table>
 </form>
+<p>{{result}}</p>
+
+<table class="tweet-table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Text</th>
+            <th>Created at</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tweet in tweet %}
+        <tr>
+            <td>{{ tweet['username'] }}</td>
+            <td>
+                {% for word in tweet.text.split() %}
+                    {% if word.lower() in search.lower() %}
+                        <span class="highlight">{{ word | safe }}</span>
+                    {% else %}
+                        {{ word | safe }}
+                    {% endif %}
+                    &nbsp;
+                {% endfor %}
+            </td>
+            <td>{{ tweet['created_at'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<!-- Display default tweets -->
+<table class="tweet-table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Text</th>
+            <th>Created at</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tweet in tweetss %}
+        <tr>
+            <td>{{ tweet.username }}</td>
+            <td>{{ tweet.text }}</td>
+            <td>{{ tweet.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
+
+
