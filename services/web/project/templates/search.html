@@ -1,4 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<form action='/search' method="POST">
+        <table>
+                <tr>
+                <td>
+			search                        
+                </td>
+                <td>
+                        <input type=text name=search>
+                </td>
+                </tr>
+        </table>
+</form>
 {% endblock %}

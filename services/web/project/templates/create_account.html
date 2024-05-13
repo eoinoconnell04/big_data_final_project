@@ -1,4 +1,4 @@
-{% extends 'base.html'}
+{% extends 'base.html' %}
 
 {% block content %}
 <h2>Create New Account</h2>
@@ -13,6 +13,14 @@
 <p class='color:red;'>
         ERROR: Username already in use.
 </p>
+{% endif %}
+
+{% if not mismatch and not taken and not empty %}
+<p>Account succesfully created, please login</p>
+{% endif %}
+
+{% if empty %}
+<p>Please enter a valid username and password</p>
 {% endif %}
 
 <form action='/login' method="POST">

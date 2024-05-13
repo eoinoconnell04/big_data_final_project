@@ -1,4 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+{% if message_inserted %}
+<p>Message Inserted Correctly!</p>
+{% endif %}
+
+
+<form action='/create_message' method="POST">
+        <table>
+                <tr>
+                <td>
+                        message
+                </td>
+                <td>
+                        <input type=text name=message>
+                </td>
+                </tr>
+        </table>
+</form>
 {% endblock %}
