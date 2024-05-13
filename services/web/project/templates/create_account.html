@@ -1,0 +1,50 @@
+{% extends 'base.html'}
+
+{% block content %}
+<h2>Create New Account</h2>
+
+{% if mismatch %}
+<p class='color:red;'>
+        ERROR: Passwords do not match.
+</p>
+{% endif %}
+
+{% if taken %}
+<p class='color:red;'>
+        ERROR: Username already in use.
+</p>
+{% endif %}
+
+<form action='/login' method="POST">
+        <table>
+                <tr>
+                <td>
+                        username
+                </td>
+                <td>
+                        <input type=text name=username>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                        password
+                </td>
+                <td>
+                        <input type=password name=password>
+                </td>
+                </tr>
+		<tr>
+                <td>
+                        password2
+                </td>
+                <td>
+                        <input type=password name=password2>
+                </td>
+                </tr>
+                <tr>
+                        <td></td>
+                        <td><input type=submit value='log in'></td>
+                </tr>
+        </table>
+</form>
+{% endblock %}
