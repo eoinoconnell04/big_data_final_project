@@ -10,9 +10,13 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+import sqlalchemy
+from sqlalchemy import text, create_engine
+import psycopg2
 
 
 app = Flask(__name__)
+app.config.from_object("project.config.Config")
 db = SQLAlchemy(app)
 
 engine = sqlalchemy.create_engine("postgresql://postgres:pass@postgres:5432", connect_args={
@@ -88,6 +92,4 @@ def check_creds(username, password):
 
 def check_taken(username):
     return false
-
-app.run()
 
