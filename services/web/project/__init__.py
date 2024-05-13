@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 import sqlalchemy
 from sqlalchemy import text, create_engine
 import psycopg2
+import bleach
 
 
 app = Flask(__name__)
@@ -119,7 +120,7 @@ def search():
 
     tweets = get_tweets(search, page)
     
-    return render_template('search.html',logged_in=good_creds, result=result, tweets=tweets, page=page, search=search)
+    return render_template('search.html',logged_in=good_creds, tweets=tweets, page=page, search=search)
 
 
 
