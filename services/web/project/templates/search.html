@@ -1,3 +1,5 @@
+
+<!--
 {% extends 'base.html' %}
 
 {% block content %}
@@ -24,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for tweet in tweet %}
+        {% for tweet in tweets %}
         <tr>
             <td>{{ tweet['username'] }}</td>
             <td>
@@ -42,27 +44,13 @@
         {% endfor %}
     </tbody>
 </table>
-{% else %}
-<!-- Display default tweets -->
-<table class="tweet-table">
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Text</th>
-            <th>Created at</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for tweet in tweetss %}
-        <tr>
-            <td>{{ tweet.username }}</td>
-            <td>{{ tweet.text }}</td>
-            <td>{{ tweet.created_at }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 {% endblock %}
+-->
 
+
+{% extends 'base.html' %}
+
+{% block content %}
+{% endblock %}
 

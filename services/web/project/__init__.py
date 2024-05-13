@@ -44,7 +44,7 @@ def login():
     password = request.form.get('password')
     approved = check_creds(username,password)
     if username is None:
-        return render_template('login.html', bad_creds=False)
+        return render_template('login.html', bad_creds=False, logged_in=False)
     else:
         if approved:
 
@@ -55,7 +55,7 @@ def login():
             response.set_cookie('password', password)
             return response
         else:
-            return render_template('login.html', bad_creds=True) 
+            return render_template('login.html', bad_creds=True, logged_in=False) 
 
 @app.route('/logout')
 def logout():
@@ -69,6 +69,7 @@ def logout():
 
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+
 
     username = request.form.get('username')
     password = request.form.get('password')
@@ -86,7 +87,7 @@ def create_account():
                     "INSERT INTO users (username, password) VALUES (:username, :password);"
                     ),  {"username": username, "password": password})  
             except sqlalchemy.exc.IntegrityError:
-                print('error')
+                pass 
             return render_template('create_account.html', logged_in=False, mismatch=False, taken=False, empty=False)
     else:
         return render_template('create_account.html', logged_in=False, mismatch=False, taken=False, empty=True)
@@ -110,6 +111,7 @@ def create_message():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
 
+    '''
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_creds = check_creds(username,password)
@@ -121,7 +123,8 @@ def search():
     tweets = get_tweets(search, page)
     
     return render_template('search.html',logged_in=good_creds, tweets=tweets, page=page, search=search)
-
+    '''
+    return render_template('search.html')
 
 
 #helper functions:
@@ -195,6 +198,8 @@ def insert_tweet(text, username):
     connection.execute(sql)
     connection.commit()
 
+
+'''
 def get_tweets(search, page):
     offset = (page - 1) * 20
     tweets = []
@@ -225,4 +230,4 @@ def get_tweets(search, page):
         })
 
     return tweets
-
+'''
